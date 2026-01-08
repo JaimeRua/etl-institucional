@@ -1,0 +1,17 @@
+[project]
+name = "etl-institucional"
+version = "0.1.0"
+description = "Repositorio central de ETL del Area de Analisis Institucional"
+requires-python = ">=3.10"
+
+dependencies = [
+    "pandas>=2.3.3",
+    "psycopg[binary]>=3.3.2",
+    "pydantic>=2.12.5",
+    "pydantic-settings>=2.12.0",
+    "pyodbc>=5.3.0",
+    "python-dotenv>=1.2.1",
+    "pyyaml>=6.0.3",
+    "requests>=2.32.5",
+    "sqlalchemy>=2.0.45",
+]
