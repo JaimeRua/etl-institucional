@@ -1,4 +1,5 @@
 import os
+import urllib.parse
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
 
@@ -7,10 +8,11 @@ def get_pg_engine() -> Engine:
     port = os.getenv("PG_PORT", "5432")
     db = os.getenv("PG_DB")
     user = os.getenv("PG_USER")
-    pwd = os.getenv("PG_PASSWORD")
+    password = os.getenv("PG_PASSWORD")
 
-    if not all([host, db, user, pwd]):
-        raise RuntimeError("Faltan variables PG_* en .env")
+    if not host or not db or not user or not password:
+        raise RuntimeError("Faltan variables PG_* (PG_HOST, PG_DB, PG_USER, PG_PASSWORD).")
 
-    url = f"postgresql+psycopg://{user}:{pwd}@{host}:{port}/{db}"
+    password_enc = urllib.parse.quote_plus(password)  # password ya es str
+    url = f"postgresql+psycopg://{user}:{password_enc}@{host}:{port}/{db}"
     return create_engine(url, pool_pre_ping=True)

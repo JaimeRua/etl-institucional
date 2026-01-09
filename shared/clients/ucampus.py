@@ -3,12 +3,16 @@ import requests
 
 class UcampusClient:
     def __init__(self) -> None:
-        self.base_url = os.getenv("UCAMPUS_BASE_URL")
-        self.token = os.getenv("UCAMPUS_TOKEN")
-        self.timeout = int(os.getenv("UCAMPUS_TIMEOUT_S", "30"))
+        base_url = os.getenv("UCAMPUS_BASE_URL")
+        token = os.getenv("UCAMPUS_TOKEN")
+        timeout_s = os.getenv("UCAMPUS_TIMEOUT_S", "30")
 
-        if not self.base_url or not self.token:
+        if not base_url or not token:
             raise RuntimeError("Faltan UCAMPUS_BASE_URL / UCAMPUS_TOKEN en .env")
+
+        self.base_url: str = base_url
+        self.token: str = token
+        self.timeout: int = int(timeout_s)
 
     def get(self, path: str, params: dict | None = None) -> dict:
         url = self.base_url.rstrip("/") + "/" + path.lstrip("/")

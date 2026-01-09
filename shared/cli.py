@@ -1,5 +1,7 @@
 import argparse
 import importlib
+from dotenv import load_dotenv
+load_dotenv()
 
 def main() -> None:
     parser = argparse.ArgumentParser()

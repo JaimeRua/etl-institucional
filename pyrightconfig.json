@@ -1,0 +1,6 @@
+{
+  "include": ["shared", "pipelines"],
+  "exclude": ["**/__pycache__", ".venv", ".git", "scratch"],
+  "typeCheckingMode": "basic",
+  "reportMissingImports": "warning"
+}
