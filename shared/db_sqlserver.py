@@ -3,6 +3,7 @@ import urllib.parse
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
 
+
 def get_mssql_engine() -> Engine:
     host = os.getenv("MSSQL_HOST")
     port = os.getenv("MSSQL_PORT", "1433")

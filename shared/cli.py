@@ -1,7 +1,9 @@
 import argparse
 import importlib
 from dotenv import load_dotenv
+
 load_dotenv()
+
 
 def main() -> None:
     parser = argparse.ArgumentParser()
@@ -16,6 +18,7 @@ def main() -> None:
     if args.cmd == "run":
         mod = importlib.import_module(f"pipelines.{args.pipeline}.pipeline")
         mod.run(args.env)
+
 
 if __name__ == "__main__":
     main()

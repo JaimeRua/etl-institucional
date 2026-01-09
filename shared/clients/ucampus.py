@@ -1,6 +1,7 @@
 import os
 import requests
 
+
 class UcampusClient:
     def __init__(self) -> None:
         base_url = os.getenv("UCAMPUS_BASE_URL")
