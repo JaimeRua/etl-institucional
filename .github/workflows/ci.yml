@@ -31,4 +31,11 @@ jobs:
         run: uv run pyright
 
       - name: Pytest (with coverage)
-        run: uv run pytest -q --cov=shared --cov=pipelines --cov-report=term-missing
+        run: uv run pytest -q --cov=shared --cov=pipelines --cov-report=term-missing --cov-report=xml:coverage.xml
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-xml
+          path: coverage.xml
+          if-no-files-found: error
