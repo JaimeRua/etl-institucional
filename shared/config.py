@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 import os
 import yaml
@@ -49,7 +49,7 @@ class Settings:
     ucampus: UcampusCfg
 
 
-def _read_yaml(path: Path) -> Dict[str, Any]:
+def _read_yaml(path: Path) -> dict[str, Any]:
     if not path.exists():
         raise FileNotFoundError(f"No existe archivo de config: {path}")
     data = yaml.safe_load(path.read_text(encoding="utf-8"))
@@ -78,9 +78,6 @@ def load_settings(env: str) -> Settings:
         raise RuntimeError("Falta PG_PASSWORD en .env")
     if not ms_password:
         raise RuntimeError("Falta MSSQL_PASSWORD en .env")
-    if not uc_token:
-        raise RuntimeError("Falta UCAMPUS_TOKEN en .env")
-
     return Settings(
         app=AppCfg(env=str(app["env"]), log_level=str(app["log_level"])),
         postgres=PostgresCfg(
@@ -100,7 +97,7 @@ def load_settings(env: str) -> Settings:
         ),
         ucampus=UcampusCfg(
             base_url=str(uc["base_url"]),
-            token=uc_token,
+            token=uc_token or "",
             timeout_s=int(uc["timeout_s"]),
         ),
     )

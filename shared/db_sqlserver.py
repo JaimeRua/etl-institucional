@@ -1,10 +1,40 @@
 import os
 import urllib.parse
+from typing import Any
+
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
 
+from shared.config import SqlServerCfg
 
-def get_mssql_engine() -> Engine:
+
+def _odbc_connection_string(cfg: SqlServerCfg) -> str:
+    def value(raw: str) -> str:
+        return "{" + raw.replace("}", "}}") + "}"
+
+    return (
+        f"DRIVER={value(cfg.driver)};"
+        f"SERVER={cfg.host},{cfg.port};"
+        f"DATABASE={value(cfg.db)};"
+        f"UID={value(cfg.user)};PWD={value(cfg.password)};"
+        "Encrypt=yes;TrustServerCertificate=yes;"
+    )
+
+
+def get_mssql_connection(cfg: SqlServerCfg) -> Any:
+    """Abre una conexión DB-API para extracciones por streaming."""
+    import pyodbc
+
+    return pyodbc.connect(_odbc_connection_string(cfg), autocommit=True)
+
+
+def get_mssql_engine(cfg: SqlServerCfg | None = None) -> Engine:
+    if cfg is not None:
+        params = urllib.parse.quote_plus(_odbc_connection_string(cfg))
+        return create_engine(
+            f"mssql+pyodbc:///?odbc_connect={params}", pool_pre_ping=True
+        )
+
     host = os.getenv("MSSQL_HOST")
     port = os.getenv("MSSQL_PORT", "1433")
     db = os.getenv("MSSQL_DB")
