@@ -1,0 +1,20 @@
+app:
+  env: prod
+  log_level: INFO
+
+postgres:
+  host: das.uantof.cl
+  port: 5432
+  db: dgai_stg_cohorte
+  user: dgai_admin
+
+sqlserver:
+  host: tu_host_sqlserver
+  port: 1433
+  db: tu_db_origen
+  user: dgai_etl_srv
+  driver: "ODBC Driver 18 for SQL Server"
+
+ucampus:
+  base_url: "https://ucampus.uantof.cl/api/0/mufasa/"
+  timeout_s: 30
