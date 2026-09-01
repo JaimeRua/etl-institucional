@@ -15,7 +15,7 @@ Características:
 - inserción masiva con PostgreSQL `COPY`;
 - `TRUNCATE` y carga dentro de la misma transacción: un error conserva la versión anterior;
 - trazabilidad mediante `_etl_batch_id` y columnas de origen;
-- auditoría general en `etl_run` y por tabla en `etl_table_run`;
+- auditoría general en `audit.etl_run` y por tabla en `audit.etl_table_run`;
 - validación de columnas y comparación de conteos antes del `COMMIT`.
 
 ### Configuración
@@ -46,8 +46,8 @@ make run PIPELINE=sqlserver_to_raw ENV=dev ARGS="--table dbo.BI_MAT_SIES_REPORTE
 3. Consultar auditoría y conteos:
 
 ```sql
-SELECT * FROM etl_run ORDER BY started_at DESC LIMIT 5;
-SELECT * FROM etl_table_run ORDER BY started_at DESC LIMIT 20;
+SELECT * FROM audit.etl_run ORDER BY started_at DESC LIMIT 5;
+SELECT * FROM audit.etl_table_run ORDER BY started_at DESC LIMIT 20;
 ```
 
 4. Ejecutar las 137 tablas habilitadas:

@@ -19,9 +19,27 @@ class RunContext:
 
 def init_schema(engine: Engine) -> None:
     with engine.begin() as cxn:
+        cxn.execute(text("CREATE SCHEMA IF NOT EXISTS audit"))
         cxn.execute(
             text("""
-        CREATE TABLE IF NOT EXISTS etl_run (
+            DO $migration$
+            BEGIN
+              IF to_regclass('audit.etl_run') IS NULL
+                 AND to_regclass('public.etl_run') IS NOT NULL THEN
+                ALTER TABLE public.etl_run SET SCHEMA audit;
+              END IF;
+
+              IF to_regclass('audit.etl_table_run') IS NULL
+                 AND to_regclass('public.etl_table_run') IS NOT NULL THEN
+                ALTER TABLE public.etl_table_run SET SCHEMA audit;
+              END IF;
+            END
+            $migration$;
+            """)
+        )
+        cxn.execute(
+            text("""
+        CREATE TABLE IF NOT EXISTS audit.etl_run (
           run_id TEXT PRIMARY KEY,
           pipeline TEXT NOT NULL,
           env TEXT NOT NULL,
@@ -37,8 +55,8 @@ def init_schema(engine: Engine) -> None:
         )
         cxn.execute(
             text("""
-        CREATE TABLE IF NOT EXISTS etl_table_run (
-          run_id TEXT NOT NULL REFERENCES etl_run(run_id),
+        CREATE TABLE IF NOT EXISTS audit.etl_table_run (
+          run_id TEXT NOT NULL REFERENCES audit.etl_run(run_id),
           source_schema TEXT NOT NULL,
           source_table TEXT NOT NULL,
           target_schema TEXT NOT NULL,
@@ -60,7 +78,7 @@ def start_run(engine: Engine, ctx: RunContext) -> None:
     with engine.begin() as cxn:
         cxn.execute(
             text("""
-          INSERT INTO etl_run(run_id,pipeline,env,git_sha,started_at,status)
+          INSERT INTO audit.etl_run(run_id,pipeline,env,git_sha,started_at,status)
           VALUES (:run_id,:pipeline,:env,:git_sha,:started_at,'RUNNING')
         """),
             {
@@ -84,7 +102,7 @@ def finish_run(
     with engine.begin() as cxn:
         cxn.execute(
             text("""
-          UPDATE etl_run
+          UPDATE audit.etl_run
           SET finished_at=:finished_at, status=:status, rows_in=:rows_in, rows_out=:rows_out, error=:error
           WHERE run_id=:run_id
         """),
@@ -112,7 +130,7 @@ def start_table_run(
     with engine.begin() as cxn:
         cxn.execute(
             text("""
-              INSERT INTO etl_table_run(
+              INSERT INTO audit.etl_table_run(
                 run_id, source_schema, source_table, target_schema, target_table,
                 batch_id, started_at, status
               ) VALUES (
@@ -146,7 +164,7 @@ def finish_table_run(
     with engine.begin() as cxn:
         cxn.execute(
             text("""
-              UPDATE etl_table_run
+              UPDATE audit.etl_table_run
                  SET finished_at=:finished_at, status=:status,
                      rows_in=:rows_in, rows_out=:rows_out, error=:error
                WHERE run_id=:run_id
