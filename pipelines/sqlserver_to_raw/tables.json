@@ -25118,75 +25118,75 @@
       "enabled": true,
       "columns": [
         {
-          "source": "P_AL_COMENTARIO",
+          "source": "\"P_AL_COMENTARIO\"",
           "target": "p_al_comentario"
         },
         {
-          "source": "P_AL_C_CARRERA",
+          "source": "\"P_AL_C_CARRERA\"",
           "target": "p_al_c_carrera"
         },
         {
-          "source": "P_AL_C_PLAN",
+          "source": "\"P_AL_C_PLAN\"",
           "target": "p_al_c_plan"
         },
         {
-          "source": "P_AL_DECRETO",
+          "source": "\"P_AL_DECRETO\"",
           "target": "p_al_decreto"
         },
         {
-          "source": "P_AL_E_PLAN_ALUM",
+          "source": "\"P_AL_E_PLAN_ALUM\"",
           "target": "p_al_e_plan_alum"
         },
         {
-          "source": "P_AL_F_ACTUALIZACION",
+          "source": "\"P_AL_F_ACTUALIZACION\"",
           "target": "p_al_f_actualizacion"
         },
         {
-          "source": "P_AL_N_MATRICULA",
+          "source": "\"P_AL_N_MATRICULA\"",
           "target": "p_al_n_matricula"
         },
         {
-          "source": "P_AL_RUT_ALUM",
+          "source": "\"P_AL_RUT_ALUM\"",
           "target": "p_al_rut_alum"
         },
         {
-          "source": "P_AL_SEME_FIN",
+          "source": "\"P_AL_SEME_FIN\"",
           "target": "p_al_seme_fin"
         },
         {
-          "source": "P_AL_SEME_INI",
+          "source": "\"P_AL_SEME_INI\"",
           "target": "p_al_seme_ini"
         },
         {
-          "source": "P_AL_AGNO_IC",
+          "source": "\"P_AL_AGNO_IC\"",
           "target": "p_al_agno_ic"
         },
         {
-          "source": "P_AL_T_INGRESO",
+          "source": "\"P_AL_T_INGRESO\"",
           "target": "p_al_t_ingreso"
         },
         {
-          "source": "FECHA_EGRESO",
+          "source": "\"FECHA_EGRESO\"",
           "target": "fecha_egreso"
         },
         {
-          "source": "FECHA_ACT",
+          "source": "\"FECHA_ACT\"",
           "target": "fecha_act"
         },
         {
-          "source": "USUARIO_ACT",
+          "source": "\"USUARIO_ACT\"",
           "target": "usuario_act"
         },
         {
-          "source": "FECHA_TITULACION",
+          "source": "\"FECHA_TITULACION\"",
           "target": "fecha_titulacion"
         },
         {
-          "source": "P_AL_SEME_EGRESO",
+          "source": "\"P_AL_SEME_EGRESO\"",
           "target": "p_al_seme_egreso"
         },
         {
-          "source": "P_AL_SEME_TITULACION",
+          "source": "\"P_AL_SEME_TITULACION\"",
           "target": "p_al_seme_titulacion"
         }
       ]
