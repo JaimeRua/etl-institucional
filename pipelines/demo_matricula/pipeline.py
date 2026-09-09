@@ -31,20 +31,22 @@ def validate(df: pd.DataFrame) -> None:
     if missing:
         raise ValueError(f"Faltan columnas requeridas: {sorted(missing)}")
 
-    if df["anio"].isna().any():
+    if bool(df["anio"].isna().any()):
         raise ValueError("Hay valores nulos en anio")
 
-    if (df["anio"] < 1900).any() or (df["anio"] > 2100).any():
+    if bool((df["anio"] < 1900).any()) or bool((df["anio"] > 2100).any()):
         raise ValueError("anio fuera de rango razonable")
 
-    if df["carrera"].isna().any() or (df["carrera"].astype(str).str.len() == 0).any():
+    if bool(df["carrera"].isna().any()) or bool(
+        (df["carrera"].astype(str).str.len() == 0).any()
+    ):
         raise ValueError("carrera vacía o nula")
 
-    if (df["matriculados"] < 0).any():
+    if bool((df["matriculados"] < 0).any()):
         raise ValueError("matriculados no puede ser negativo")
 
     # Clave natural: (anio, carrera) debe ser única
-    if df.duplicated(subset=["anio", "carrera"]).any():
+    if bool(df.duplicated(subset=["anio", "carrera"]).any()):
         dups = df[df.duplicated(subset=["anio", "carrera"], keep=False)]
         raise ValueError(f"Duplicados en clave (anio,carrera):\n{dups}")
 
@@ -97,5 +99,7 @@ def run(ctx: RunContext, settings: Settings) -> tuple[int, int]:
     ensure_table(engine)
     rows_out = upsert(engine, df)
 
-    print(f"[demo_matricula] run_id={ctx.run_id} env={ctx.env} rows_in={rows_in} rows_out={rows_out}")
+    print(
+        f"[demo_matricula] run_id={ctx.run_id} env={ctx.env} rows_in={rows_in} rows_out={rows_out}"
+    )
     return rows_in, rows_out

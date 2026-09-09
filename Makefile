@@ -1,5 +1,6 @@
 PIPELINE ?= demo_matricula
 ENV ?= dev
+ARGS ?=
 
 .PHONY: lint fmt fmt-check type test ci env config run
 
@@ -31,4 +32,4 @@ config:
 	uv run python -c "from shared.config import load_settings; s=load_settings('$(ENV)'); print('OK settings:', s.app.env, s.postgres.host)"
 
 run: env
-	PYTHONPATH=. uv run python -m shared.cli run --pipeline $(PIPELINE) --env $(ENV)
+	PYTHONPATH=. uv run python -m shared.cli run --pipeline $(PIPELINE) --env $(ENV) $(ARGS)
