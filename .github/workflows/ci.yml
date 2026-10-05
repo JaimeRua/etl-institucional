@@ -7,7 +7,28 @@ on:
 
 jobs:
   quality:
+    name: quality (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11"]
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: etl
+          POSTGRES_PASSWORD: etl
+          POSTGRES_DB: etl_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U etl -d etl_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      TEST_PG_DSN: postgresql://etl:etl@localhost:5432/etl_test
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -16,10 +37,10 @@ jobs:
         uses: astral-sh/setup-uv@v3
 
       - name: Set up Python
-        run: uv python install 3.11
+        run: uv python install ${{ matrix.python-version }}
 
       - name: Sync deps (from lock)
-        run: uv sync --dev
+        run: uv sync --dev --python ${{ matrix.python-version }}
 
       - name: Ruff lint
         run: uv run ruff check .
@@ -36,6 +57,6 @@ jobs:
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-xml
+          name: coverage-xml-python-${{ matrix.python-version }}
           path: coverage.xml
           if-no-files-found: error

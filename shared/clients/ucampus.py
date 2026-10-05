@@ -1,19 +1,16 @@
-import os
 import requests
+
+from shared.config import UcampusCfg
 
 
 class UcampusClient:
-    def __init__(self) -> None:
-        base_url = os.getenv("UCAMPUS_BASE_URL")
-        token = os.getenv("UCAMPUS_TOKEN")
-        timeout_s = os.getenv("UCAMPUS_TIMEOUT_S", "30")
+    def __init__(self, cfg: UcampusCfg) -> None:
+        if not cfg.base_url or not cfg.token:
+            raise RuntimeError("Falta configuración o token de Ucampus")
 
-        if not base_url or not token:
-            raise RuntimeError("Faltan UCAMPUS_BASE_URL / UCAMPUS_TOKEN en .env")
-
-        self.base_url: str = base_url
-        self.token: str = token
-        self.timeout: int = int(timeout_s)
+        self.base_url = cfg.base_url
+        self.token = cfg.token
+        self.timeout = cfg.timeout_s
 
     def get(self, path: str, params: dict | None = None) -> dict:
         url = self.base_url.rstrip("/") + "/" + path.lstrip("/")

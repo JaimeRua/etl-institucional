@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
 from typing import Any
 
@@ -14,6 +15,8 @@ from shared.audit import RunContext, finish_table_run, start_table_run
 from shared.config import Settings
 from shared.db_postgres import get_pg_connection, get_pg_engine
 from shared.db_sqlserver import get_mssql_connection
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -162,9 +165,17 @@ def run(ctx: RunContext, settings: Settings) -> tuple[int, int]:
                 target_table=table.target_table,
                 batch_id=batch_id,
             )
-            print(
-                f"[sqlserver_to_raw] {position}/{len(tables)} "
-                f"{table.source_key} -> {manifest.target_schema}.{table.target_table}"
+            logger.info(
+                "raw_table_load_started",
+                extra={
+                    "event": "raw_table_load_started",
+                    "run_id": ctx.run_id,
+                    "pipeline": ctx.pipeline,
+                    "position": position,
+                    "table_count": len(tables),
+                    "source_table": table.source_key,
+                    "target_table": (f"{manifest.target_schema}.{table.target_table}"),
+                },
             )
             try:
                 result = load_table(
@@ -212,8 +223,16 @@ def run(ctx: RunContext, settings: Settings) -> tuple[int, int]:
         suffix = f"; y {len(failures) - 5} más" if len(failures) > 5 else ""
         raise RawLoadError(f"Fallaron {len(failures)} tabla(s): {preview}{suffix}")
 
-    print(
-        f"[sqlserver_to_raw] run_id={ctx.run_id} tablas={len(tables)} "
-        f"rows_in={total_in} rows_out={total_out} dry_run={dry_run}"
+    logger.info(
+        "raw_pipeline_completed",
+        extra={
+            "event": "raw_pipeline_completed",
+            "run_id": ctx.run_id,
+            "pipeline": ctx.pipeline,
+            "table_count": len(tables),
+            "rows_in": total_in,
+            "rows_out": total_out,
+            "dry_run": dry_run,
+        },
     )
     return total_in, total_out
