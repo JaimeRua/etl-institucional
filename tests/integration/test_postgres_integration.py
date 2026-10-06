@@ -26,6 +26,13 @@ RAW_DDL_PATH = (
 )
 
 
+def _sqlalchemy_dsn(dsn: str) -> str:
+    """Select the SQLAlchemy dialect for the installed psycopg v3 driver."""
+    if dsn.startswith("postgresql://"):
+        return dsn.replace("postgresql://", "postgresql+psycopg://", 1)
+    return dsn
+
+
 @pytest.fixture
 def pg_dsn() -> str:
     value = os.getenv("TEST_PG_DSN")
@@ -58,7 +65,7 @@ def clean_postgres(pg_dsn: str):
 
 
 def test_audit_run_lifecycle(pg_dsn: str, clean_postgres) -> None:
-    engine = create_engine(pg_dsn)
+    engine = create_engine(_sqlalchemy_dsn(pg_dsn))
     ctx = RunContext(
         run_id=str(uuid.uuid4()),
         pipeline="integration_test",
@@ -81,6 +88,13 @@ def test_audit_run_lifecycle(pg_dsn: str, clean_postgres) -> None:
     engine.dispose()
 
     assert tuple(row) == ("SUCCESS", 2, 2)
+
+
+def test_sqlalchemy_dsn_uses_psycopg3() -> None:
+    assert (
+        _sqlalchemy_dsn("postgresql://user:pass@localhost/db")
+        == "postgresql+psycopg://user:pass@localhost/db"
+    )
 
 
 def test_raw_ddl_executes_and_creates_the_complete_inventory(clean_postgres) -> None:
