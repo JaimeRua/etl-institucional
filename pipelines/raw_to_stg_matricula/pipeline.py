@@ -1,14 +1,17 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 import json
-from pathlib import Path
+import logging
 import re
+from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
 from shared.audit import RunContext, finish_table_run, start_table_run
 from shared.config import Settings
 from shared.db_postgres import get_pg_connection, get_pg_engine
+
+logger = logging.getLogger(__name__)
 
 
 PIPELINE_DIR = Path(__file__).resolve().parent
@@ -409,9 +412,16 @@ def run(ctx: RunContext, settings: Settings) -> tuple[int, int]:
         target_table=matrix.target_table,
         batch_id=batch_id,
     )
-    print(
-        f"[raw_to_stg_matricula] {matrix.source_schema}.{matrix.source_table} "
-        f"-> {matrix.target_schema}.{matrix.target_table}"
+    logger.info(
+        "stg_table_load_started",
+        extra={
+            "event": "stg_table_load_started",
+            "run_id": ctx.run_id,
+            "pipeline": ctx.pipeline,
+            "source_table": f"{matrix.source_schema}.{matrix.source_table}",
+            "target_table": f"{matrix.target_schema}.{matrix.target_table}",
+            "dry_run": dry_run,
+        },
     )
     try:
         ensure_ddl(connection)
@@ -453,9 +463,16 @@ def run(ctx: RunContext, settings: Settings) -> tuple[int, int]:
             else None
         ),
     )
-    print(
-        f"[raw_to_stg_matricula] run_id={ctx.run_id} "
-        f"rows_in={result.rows_in} rows_out={result.rows_out} "
-        f"rejected={result.rows_rejected} dry_run={dry_run}"
+    logger.info(
+        "stg_pipeline_completed",
+        extra={
+            "event": "stg_pipeline_completed",
+            "run_id": ctx.run_id,
+            "pipeline": ctx.pipeline,
+            "rows_in": result.rows_in,
+            "rows_out": result.rows_out,
+            "rows_rejected": result.rows_rejected,
+            "dry_run": dry_run,
+        },
     )
     return result.rows_in, result.rows_out

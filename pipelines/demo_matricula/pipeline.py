@@ -1,11 +1,15 @@
 from __future__ import annotations
 
+import logging
+
 import pandas as pd
 from sqlalchemy import text
 
 from shared.audit import RunContext
 from shared.config import Settings
 from shared.db_postgres import get_pg_engine
+
+logger = logging.getLogger(__name__)
 
 
 def extract_mock() -> pd.DataFrame:
@@ -99,7 +103,15 @@ def run(ctx: RunContext, settings: Settings) -> tuple[int, int]:
     ensure_table(engine)
     rows_out = upsert(engine, df)
 
-    print(
-        f"[demo_matricula] run_id={ctx.run_id} env={ctx.env} rows_in={rows_in} rows_out={rows_out}"
+    logger.info(
+        "demo_matricula_completed",
+        extra={
+            "event": "demo_matricula_completed",
+            "run_id": ctx.run_id,
+            "pipeline": ctx.pipeline,
+            "env": ctx.env,
+            "rows_in": rows_in,
+            "rows_out": rows_out,
+        },
     )
     return rows_in, rows_out

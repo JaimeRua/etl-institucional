@@ -1,12 +1,16 @@
 import argparse
 import importlib
+import logging
+import os
 import subprocess
 import uuid
-import os
 
-from shared.audit import RunContext, init_schema, start_run, finish_run
+from shared.audit import RunContext, finish_run, init_schema, start_run
 from shared.config import load_settings
 from shared.db_postgres import get_pg_engine
+from shared.logging_config import configure_logging
+
+logger = logging.getLogger(__name__)
 
 
 def git_sha() -> str:
@@ -41,6 +45,7 @@ def main() -> None:
         os.environ["APP_ENV"] = args.env
 
         settings = load_settings(args.env)
+        configure_logging(settings.app.log_level, settings.app.log_format)
         audit_engine = get_pg_engine(settings.postgres)
         init_schema(audit_engine)
         run_id = str(uuid.uuid4())
@@ -66,6 +71,15 @@ def main() -> None:
             )
         except Exception as e:
             finish_run(audit_engine, run_id, "FAILED", error=str(e))
+            logger.exception(
+                "pipeline_failed",
+                extra={
+                    "event": "pipeline_failed",
+                    "run_id": run_id,
+                    "pipeline": args.pipeline,
+                    "env": args.env,
+                },
+            )
             raise
 
 

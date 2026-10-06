@@ -1,18 +1,21 @@
 app:
   env: prod
   log_level: INFO
+  log_format: json
 
 postgres:
-  host: das.uantof.cl
+  # En producción se recomienda definir PG_HOST, PG_DB y PG_USER en el entorno.
+  host:
   port: 5432
-  db: dgai_stg_cohorte
-  user: dgai_admin
+  db:
+  user:
 
 sqlserver:
-  host: tu_host_sqlserver
+  # Definir MSSQL_HOST, MSSQL_DB y MSSQL_USER en el entorno de ejecución.
+  host:
   port: 1433
-  db: tu_db_origen
-  user: dgai_etl_srv
+  db:
+  user:
   driver: "ODBC Driver 18 for SQL Server"
 
 ucampus:

@@ -1,6 +1,7 @@
 app:
   env: dev
   log_level: INFO
+  log_format: json
 
 postgres:
   host: das.uantof.cl
